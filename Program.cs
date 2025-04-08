@@ -1,6 +1,7 @@
 ﻿// See https://aka.ms/new-console-template for more information
 
-void menu() {
+void menu()
+{
     Console.WriteLine(@"
     1. view all products
     2. view products for category 
@@ -10,4 +11,14 @@ void menu() {
     ");
 }
 
-menu();
+void HandleChoice(int choice)
+{
+    if (choice == 1)
+    {
+
+        foreach (Product product in Database.products)
+        {
+            Console.WriteLine($"{product.Id}. {product.Name}");
+        }
+    }
+}
