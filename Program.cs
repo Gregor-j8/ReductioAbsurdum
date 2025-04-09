@@ -111,6 +111,37 @@ void HandleChoice(int choice)
             Console.WriteLine("Product not found");
         }
     }
+    else if (choice == 5) {
+        Console.WriteLine(@"***Update a product***
+        
+        Please enter the Name of the product you want to update");
+
+         Console.WriteLine($"These are all of the products");
+        foreach (Product product in Database.products)
+        {
+            Console.WriteLine($"{product.Name}");
+        }
+
+        string itemToUpdate = Console.ReadLine().Trim();
+
+        Product productToUpdate = Database.products.FirstOrDefault(product => product.Name == itemToUpdate);
+        Console.WriteLine(productToUpdate.Name);
+
+        if (productToUpdate != null) {
+            Console.WriteLine("");
+            Console.WriteLine(@"Update product name");
+            productToUpdate.Name = Console.ReadLine();
+            Console.WriteLine("");
+            Console.WriteLine(@"Update product price");
+            productToUpdate.Price = int.Parse(Console.ReadLine());
+            Console.WriteLine("Product update");
+        }
+        else {
+            Console.WriteLine("Product not found");
+        }
+    }
+
+
 }
 
 int on = 1;
