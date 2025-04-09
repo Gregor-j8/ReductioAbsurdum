@@ -13,11 +13,17 @@ void menu()
     4. delete product from inventory 
     5. update product details
     ");
-    int response = int.Parse(Console.ReadLine().Trim());
-    if (response > 5 | response < 1) {
-        Console.WriteLine(@"Please enter a valid menu option");
-    } else {
-        HandleChoice(response);
+    try {
+        int response = int.Parse(Console.ReadLine().Trim());
+        if (response > 5 | response < 1) {
+            Console.WriteLine(@"Please enter a valid menu option");
+        } else {
+            HandleChoice(response);
+        }
+    } catch (FormatException) {
+        Console.WriteLine("Invalid input. Please enter a number.");
+    } catch (Exception ex) {
+        Console.WriteLine($"An error occurred: {ex.Message}");
     }
 }
 
@@ -38,14 +44,22 @@ void HandleChoice(int choice)
         {  
             Console.WriteLine($"{types.Id}. {types.Name}");
         }
-            int chosenType = int.Parse(Console.ReadLine().Trim());
-            if (chosenType > 1 || chosenType < 4) 
-            {
-                List<Product> ChosenTypes = Database.products.Where(type => type.TypeId == chosenType).ToList();
+            try {
+                int chosenType = int.Parse(Console.ReadLine().Trim());
+                if (chosenType > 1 || chosenType < 4)
+                {
+                    List<Product> ChosenTypes = Database.products.Where(type => type.TypeId == chosenType).ToList();
                     foreach (Product type in ChosenTypes)
-                    {  
-                         Console.WriteLine($"{type.Id}. {type.Name}");
+                    {
+                        Console.WriteLine($"{type.Id}. {type.Name}");
                     }
+                } else {
+                    Console.WriteLine($"Invalid input");
+                }
+            } catch (FormatException) {
+                Console.WriteLine("Invalid input. Please enter a number for the type.");
+            } catch (Exception ex) {
+                Console.WriteLine($"An error occurred: {ex.Message}");
             }
     }
     else if (choice == 3) {
@@ -59,7 +73,14 @@ void HandleChoice(int choice)
 
         Console.WriteLine($"What is the price of your {name}?");
 
-        decimal price = decimal.Parse(Console.ReadLine().Trim());
+        decimal price = 0; 
+        try {
+            price = decimal.Parse(Console.ReadLine().Trim());
+        } catch (FormatException) {
+            Console.WriteLine("Invalid price format. Please enter a valid number.");
+        } catch (Exception ex) {
+            Console.WriteLine($"An error occurred: {ex.Message}");
+        }
 
         Console.WriteLine($@"What is the type of your {name}?
 
@@ -73,8 +94,14 @@ void HandleChoice(int choice)
 
         Console.WriteLine($"Please enter the number of the type of your {name}");
 
-        int typeId = int.Parse(Console.ReadLine().Trim());
-
+        int typeId = 0; 
+        try {
+            typeId = int.Parse(Console.ReadLine().Trim());
+        } catch (FormatException) {
+            Console.WriteLine("Invalid input. Please enter a number for the type.");
+        } catch (Exception ex) {
+            Console.WriteLine($"An error occurred: {ex.Message}");
+        }
         Product newProduct = new Product(name)
     {
         Price = price,
@@ -100,12 +127,63 @@ void HandleChoice(int choice)
 
         string itemToDelete = Console.ReadLine().Trim();
 
-        Product productToRemove = Database.products.FirstOrDefault(product => product.Name == itemToDelete);
-        Console.WriteLine(productToRemove.Name);
+        Product productToRemove = null;
+        try {
+            productToRemove = Database.products.FirstOrDefault(product => product.Name == itemToDelete);
+            if (productToRemove != null) {
+                Console.WriteLine(productToRemove.Name);
+            }
+        } catch (Exception ex) {
+            Console.WriteLine($"An error occurred while finding the product: {ex.Message}");
+        }
 
         if (productToRemove != null) {
             Database.products.Remove(productToRemove);
             Console.WriteLine("Product Removed");
+        }
+        else {
+            Console.WriteLine("Product not found");
+        }
+    }
+    else if (choice == 5) {
+        Console.WriteLine(@"***Update a product***
+        
+        Please enter the Name of the product you want to update");
+
+         Console.WriteLine($"These are all of the products");
+        foreach (Product product in Database.products)
+        {
+            Console.WriteLine($"{product.Name}");
+        }
+
+        string itemToUpdate = Console.ReadLine().Trim();
+
+        Product productToUpdate = null;
+        try {
+            productToUpdate = Database.products.FirstOrDefault(product => product.Name == itemToUpdate);
+            if (productToUpdate != null) { 
+                Console.WriteLine(productToUpdate.Name);
+            }
+        } catch (Exception ex) {
+            Console.WriteLine($"An error occurred while finding the product: {ex.Message}");
+        }
+
+        if (productToUpdate != null) {
+            Console.WriteLine("");
+            Console.WriteLine(@"Update product name");
+            productToUpdate.Name = Console.ReadLine();
+            Console.WriteLine("");
+            Console.WriteLine(@"Update product price");
+            try {
+                productToUpdate.Price = decimal.Parse(Console.ReadLine()); 
+            } catch (FormatException) {
+                Console.WriteLine("Invalid price format. Price not updated.");
+            } catch (NullReferenceException) {
+                Console.WriteLine("Error: Product reference was null unexpectedly.");
+            } catch (Exception ex) {
+                Console.WriteLine($"An error occurred updating price: {ex.Message}");
+            }
+            Console.WriteLine("Product update");
         }
         else {
             Console.WriteLine("Product not found");
@@ -123,6 +201,14 @@ Console.WriteLine(@"
 1. return to menu
 ");
 
-on = int.Parse(Console.ReadLine().Trim());
+    try {
+        on = int.Parse(Console.ReadLine().Trim());
+    } catch (FormatException) {
+        Console.WriteLine("Invalid input. Please enter 0 or 1.");
+        on = 1; // Default to returning to menu on invalid input
+    } catch (Exception ex) {
+        Console.WriteLine($"An error occurred: {ex.Message}");
+        on = 1; // Default to returning to menu on other errors
+    }
 
 }
